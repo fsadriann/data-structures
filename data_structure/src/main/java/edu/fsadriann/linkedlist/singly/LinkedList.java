@@ -439,7 +439,7 @@ public boolean retain(E[] array) {
         current = current.getNext(); // avanzas ANTES de eliminar
         
         if (!contains(element)) {  
-            remove(element);             //elimina el element
+            remove(element); //elimina el elemento
         }
     }
     return true;
@@ -453,7 +453,7 @@ public boolean retain(Collection<E> collection) {
         current = current.getNext(); // avanzas ANTES de eliminar
 
         if (!collection.contains(element)) { // si el elemento NO está en la colección
-            remove(element);                  // lo eliminas de tu lista
+            remove(element); // lo elimina de la lista
         }
     }
     return true;
