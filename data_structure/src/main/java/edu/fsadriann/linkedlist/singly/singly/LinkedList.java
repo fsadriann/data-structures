@@ -1,4 +1,4 @@
-package edu.fsadriann.linkedlist.singly;
+package edu.fsadriann.linkedlist.singly.singly;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -356,40 +356,31 @@ public boolean remove(Collection<E> collection) {
     return true;
 }
   @Override
-public boolean remove(Predicate<E> filter) {
-    LinkedNode<E> previous = null;
-    LinkedNode<E> current = head;
-
-    while (current != null) {
-        
-        // 1. en vez de equals(), usas filter.test()
-        // el predicado decide si el nodo se elimina o no
-        if (filter.test(current.get())) {
-            
-            if (current == head) {
-                // Caso 1: es el head
-                head = head.getNext();
-                return true;
-                
-            } else if (current == tail) {
-                // Caso 2: es el tail
-                tail = previous;
-                previous.setNext(null);
-                return true;
-                
-            } else {
-                // Caso 3: está en el medio
-                previous.setNext(current.getNext());
-                return true;
-            }
-        }
-        previous = current;
-        current = current.getNext();
+  public boolean remove(Predicate<E> filter) {
+      if (isEmpty() || filter == null) {
+          return false;
+      }
+      
+      boolean anyRemoved = false;
+      LinkedNode<E> current = head;
+      
+      // Recorrer toda la lista y eliminar todos los elementos que cumplan
+      while (current != null) {
+          LinkedNode<E> next = current.getNext();  // Guardar el siguiente ANTES de eliminar
+          
+          if (filter.test(current.get())) {
+              remove(current.get());  // Eliminar el elemento actual
+              anyRemoved = true;
+          }
+          
+          current = next;  // Avanzar al siguiente nodo replace
+      }
+      
+      if (anyRemoved) {
+          return true;
+      }
+      return false;
     }
-    
-    // 3. ningún nodo cumplió la condición del predicado
-    return false;
-}
 
   @Override
 public boolean replace(E element, E newElement, Predicate<E> comparator) {
@@ -415,20 +406,28 @@ public boolean replace(E[] array, E[] newArray, Predicate<E> comparator) {
     return true;
 }
 
-  @Override
+@Override
 public boolean replace(Collection<E> collection, Collection<E> newCollection, Predicate<E> comparator) {
     Iterator<E> iteratorElements = collection.iterator();
     Iterator<E> iteratorNew = newCollection.iterator();
 
+    boolean anyReplaced = false;
+    
     while (iteratorElements.hasNext()) {
         E element = iteratorElements.next();
         E newElement = iteratorNew.next();
 
-        if (!replace(element, newElement, comparator)) {
-            return false;
+        // Intenta reemplazar, si lo hace marca como true
+        if (replace(element, newElement, comparator)) {
+            anyReplaced = true;
         }
+        // Si no lo reemplaza, continúa con el siguiente
     }
-    return true;
+    
+    if (anyReplaced) {
+        return true;
+    }
+    return false;
 }
 @Override
 public boolean retain(E[] array) {

@@ -1,4 +1,4 @@
-package edu.fsadriann.linkedlist.singly;
+package edu.fsadriann.linkedlist.doubly;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import edu.fsadriann.linkedlist.singly.singly.LinkedList;
+import edu.fsadriann.linkedlist.doubly.doubly.LinkedList;
 import edu.fsadriann.model.iterator.Iterator;
 
 public class LinkedListTest {
