@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.function.ToIntFunction;
+
+import edu.fsadriann.app.linkedlist.doubly.circular.LinkedList;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.Function;

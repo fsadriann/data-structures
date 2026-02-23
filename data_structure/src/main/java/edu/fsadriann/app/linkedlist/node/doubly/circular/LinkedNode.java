@@ -1,4 +1,4 @@
-package edu.fsadriann.linkedlist.node.doubly.circular;
+package edu.fsadriann.app.linkedlist.node.doubly.circular;
 import edu.fsadriann.model.node.AbstractNode;
 
 public class LinkedNode<E> extends AbstractNode<E> {

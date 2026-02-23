@@ -1,4 +1,4 @@
-package edu.fsadriann.linkedlist.node.singly.circular;
+package edu.fsadriann.app.linkedlist.node.singly.circular;
 
 import edu.fsadriann.model.node.AbstractNode;
 

@@ -1,4 +1,4 @@
-package edu.fsadriann.linkedlist.node.doubly;
+package edu.fsadriann.app.linkedlist.node.doubly;
 
 import edu.fsadriann.model.node.AbstractNode;
 

@@ -1,10 +1,10 @@
-package edu.fsadriann.linkedlist.singly.singly;
+package edu.fsadriann.app.linkedlist.singly.singly;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
-import edu.fsadriann.linkedlist.node.singly.LinkedNode;
+import edu.fsadriann.app.linkedlist.node.singly.LinkedNode;
 import edu.fsadriann.model.collection.Collection;
 import edu.fsadriann.model.iterator.Iterator;
 import edu.fsadriann.model.list.AbstractList;

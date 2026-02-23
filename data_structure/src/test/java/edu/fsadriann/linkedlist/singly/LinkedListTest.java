@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import edu.fsadriann.linkedlist.singly.singly.LinkedList;
+import edu.fsadriann.app.linkedlist.singly.singly.LinkedList;
 import edu.fsadriann.model.iterator.Iterator;
 
 public class LinkedListTest {

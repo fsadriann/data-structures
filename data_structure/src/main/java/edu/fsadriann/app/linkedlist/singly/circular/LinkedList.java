@@ -1,10 +1,10 @@
-package edu.fsadriann.linkedlist.singly.circular;
+package edu.fsadriann.app.linkedlist.singly.circular;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
-import edu.fsadriann.linkedlist.node.singly.circular.LinkedNode;
+import edu.fsadriann.app.linkedlist.node.singly.circular.LinkedNode;
 import edu.fsadriann.model.collection.Collection;
 import edu.fsadriann.model.iterator.Iterator;
 import edu.fsadriann.model.list.AbstractList;

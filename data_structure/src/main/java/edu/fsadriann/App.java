@@ -1,6 +1,6 @@
 package edu.fsadriann;
 
-import edu.fsadriann.linkedlist.singly.singly.LinkedList;
+import edu.fsadriann.app.linkedlist.singly.singly.LinkedList;
 
 /**
  * Hello world!

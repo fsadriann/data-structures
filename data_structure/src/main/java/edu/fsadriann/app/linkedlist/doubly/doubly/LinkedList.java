@@ -1,43 +1,40 @@
-package edu.fsadriann.linkedlist.doubly.circular;
+package edu.fsadriann.app.linkedlist.doubly.doubly;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
-import edu.fsadriann.linkedlist.node.doubly.LinkedNode;
+import edu.fsadriann.app.linkedlist.node.doubly.LinkedNode;
 import edu.fsadriann.model.collection.Collection;
 import edu.fsadriann.model.iterator.Iterator;
 import edu.fsadriann.model.list.AbstractList;
 import edu.fsadriann.model.list.List;
 
 /**
- * Lista circular doblemente enlazada
- * El ultimo nodo apunta al primero y viceversa formando un circulo
+ * Lista doblemente enlazada
+ * Cada nodo tiene referencia al siguiente y al anterior
  */
 public class LinkedList<E> extends AbstractList<E> {
 
-    
     // cantidad de elementos en la lista
     private int size;
     // primer nodo de la lista
     private LinkedNode<E> head;
     // ultimo nodo de la lista
-    private LinkedNode<E> flag;
+    private LinkedNode<E> tail;
 
-    
     // crea lista vacia
     public LinkedList() {
         size = 0;
-        this.head = this.flag = null;
+        this.head = this.tail = null;
     }
 
     // crea lista con un elemento inicial
     public LinkedList(E element) {
         size = 1;
         LinkedNode<E> node = new LinkedNode<E>(element);
-        this.head = this.flag = node;
+        this.head = this.tail = node;
     }
-
     
     // convierte la lista a string para imprimir
     @Override
@@ -45,7 +42,7 @@ public class LinkedList<E> extends AbstractList<E> {
         LinkedNode<E> node = head;
         String string;
         if (node == null) {
-            string = "LinkedList: Vacía";  
+            string = "LinkedList: Empty";  
         } else {
             string = "LinkedList:";
             for (int i = 0; i < size; i++) {
@@ -68,6 +65,18 @@ public class LinkedList<E> extends AbstractList<E> {
         return size;
     }
 
+    // elimina todos los elementos de la lista
+    @Override
+    public boolean clear() {
+        try {
+            this.head = this.tail = null;
+            size = 0;
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     // retorna el primer elemento sin eliminarlo
     @Override
     public E peek() {
@@ -83,192 +92,111 @@ public class LinkedList<E> extends AbstractList<E> {
         if (isEmpty()) {
             return null;
         }
-        return this.flag.get();
+        return this.tail.get();
     }
 
-    // retorna los primeros N elementos en un array sin eliminarlos
-    @SuppressWarnings("unchecked")
-    @Override
-    public E[] peekArray(int cuantity) {
-        Object[] array = new Object[cuantity];
-        if (isEmpty() || cuantity <= 0) {
-            return (E[]) array;
-        }
-        if (size < cuantity) {
-            return (E[]) array;
-        }
-
-        LinkedNode<E> node = head;
-        for (int i = 0; i < array.length; i++) {
-            array[i] = node.get();
-            node = node.getNext();
-        }
-        return (E[]) array;
-    }
-
-    // retorna los ultimos N elementos en un array sin eliminarlos
-    @SuppressWarnings("unchecked")
-    @Override
-    public E[] peekLastArray(int cuantity) {
-        Object[] array = new Object[cuantity];
-        if (isEmpty() || cuantity <= 0) {
-            return (E[]) array;
-        }
-        if (size < cuantity) {
-            return (E[]) array;
-        }
-        LinkedNode<E> node = flag;
-        for (int i = cuantity - 1; i >= 0; i--) {
-            array[i] = node.get();
-            node = node.getPrevious();
-        }
-        return (E[]) array;
-    }
-
-    // retorna los primeros N elementos en una coleccion sin eliminarlos
-    @Override
-    public List<E> peekCollection(int cuantity) {
-        List<E> list = new LinkedList<>();
-        if (isEmpty() || cuantity <= 0) {
-            return list;
-        }
-
-        if (size < cuantity) {
-            return list;
-        }
-        
-        LinkedNode<E> node = head;
-        for (int i = 0; i < cuantity; i++) {
-            list.add(node.get());
-            node = node.getNext();
-        }
-        return list;
-    }
-
-    // retorna los ultimos N elementos en una coleccion sin eliminarlos
-    @Override
-    public List<E> peekLastCollection(int cuantity) {
-        List<E> list = new LinkedList<>();
-        if (isEmpty() || cuantity <= 0) {
-            return list;
-        }
-        if (size < cuantity) {
-            return list;
-        }
-        LinkedNode<E> node = flag;
-        for (int i = 0; i < cuantity; i++) {
-            list.addFirst(node.get());
-            node = node.getPrevious();
-        }
-        return list;
-    }
-
-    // agrega un elemento al final de la lista circular
+    // agrega un elemento al final de la lista
     @Override
     public boolean add(E element) {
-        if (element == null) {
+        try {
+            LinkedNode<E> node = new LinkedNode<>(element);
+            if (isEmpty()) {
+                this.head = this.tail = node;
+            } else {
+                LinkedNode<E> previous = this.tail;
+                this.tail.setNext(node);
+                this.tail = node;
+                tail.setPrevious(previous);
+            }
+            size++;
+            return true;
+        } catch (Exception e) {
             return false;
         }
-        LinkedNode<E> node = new LinkedNode<>(element);
-        if (isEmpty()) {
-            // primer elemento apunta a si mismo
-            node.setNext(node);
-            node.setPrevious(node);
-            this.head = this.flag = node;
-        } else {
-            // insertar al final y mantener circularidad
-            node.setPrevious(flag);
-            this.flag.setNext(node);
-            flag = node;
-            flag.setNext(head);
-            head.setPrevious(flag);
-        }
-        size++;
-        return true;
     }
 
     // agrega todos los elementos del array al final
     @Override
     public boolean add(E[] array) {
-        if (array == null) {
+        try {
+            for (E x : array) {
+                add(x);
+            }
+            return true;
+        } catch (Exception e) {
             return false;
         }
-        for (E x : array) {
-            add(x);
-        }
-        return true;
     }
 
     // agrega todos los elementos de la coleccion al final
     @Override
     public boolean add(Collection<E> collection) {
-        if (collection == null) {
+        try {
+            Iterator<E> iterator = collection.iterator();
+            while (iterator.hasNext()) {
+                add(iterator.next());
+            }
+            return true;
+        } catch (Exception e) {
             return false;
         }
-        Iterator<E> iterator = collection.iterator();
-        while (iterator.hasNext()) {
-            add(iterator.next());
-        }
-        return true;
     }
 
-    // agrega un elemento al inicio de la lista circular
+    // agrega un elemento al inicio de la lista
     @Override
     public boolean addFirst(E element) {
-        if (element == null) {
+        try {
+            LinkedNode<E> node = new LinkedNode<>(element);
+            if (isEmpty()) {
+                this.head = this.tail = node;
+            } else {
+                node.setNext(this.head);
+                head.setPrevious(node);
+                head = node;
+            }
+            size++;
+            return true;
+        } catch (Exception e) {
             return false;
         }
-        LinkedNode<E> node = new LinkedNode<>(element);
-        if (isEmpty()) {
-            node.setNext(node);
-            node.setPrevious(node);
-            this.head = this.flag = node;
-        } else {
-            node.setNext(this.head);
-            node.setPrevious(flag);
-            this.head = node;
-            flag.setNext(head);
-        }
-        size++;
-        return true;
     }
 
     // agrega todos los elementos del array al inicio manteniendo orden
     @Override
     public boolean addFirst(E[] array) {
-        if (array == null) {
+        try {
+            for (int i = array.length - 1; i >= 0; i--) {
+                addFirst(array[i]);
+            }
+            return true;
+        } catch (Exception e) {
             return false;
         }
-        for (int i = array.length - 1; i >= 0; i--) {
-            addFirst(array[i]);
-        }
-        return true;
     }
 
     // agrega todos los elementos de la coleccion al inicio manteniendo orden
     @Override
     public boolean addFirst(Collection<E> collection) {
-        if (collection == null) {
-            return false;
-        }
-        // crear lista temporal para almacenar elementos
-        LinkedList<E> temp = new LinkedList<>();
-        Iterator<E> iterator = collection.iterator();
-        
-        // guardar elementos en lista temporal
-        while (iterator.hasNext()) {
-            temp.add(iterator.next());
-        }
-        
-        // agregar desde el final de la lista temporal hacia el inicio
-        LinkedNode<E> node = temp.flag;
-        if (node != null) {
-            do {
+        try {
+            // crear lista temporal para almacenar elementos
+            LinkedList<E> temp = new LinkedList<>();
+            Iterator<E> iterator = collection.iterator();
+            
+            // guardar elementos en lista temporal
+            while (iterator.hasNext()) {
+                temp.add(iterator.next());
+            }
+            
+            // agregar desde el final de la lista temporal hacia el inicio
+            LinkedNode<E> node = temp.tail;
+            while (node != null) {
                 addFirst(node.get());
                 node = node.getPrevious();
-            } while (node != temp.flag);
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
         }
-        return true;
     }
 
     // verifica si un elemento existe en la lista
@@ -281,12 +209,12 @@ public class LinkedList<E> extends AbstractList<E> {
             return false;
         }
         LinkedNode<E> node = head;
-        do { 
+        while (node != null) {
             if (node.get().equals(element)) {
                 return true;
             }
             node = node.getNext();
-        } while (node != head);
+        }
         return false;
     }
 
@@ -310,7 +238,7 @@ public class LinkedList<E> extends AbstractList<E> {
     // verifica si todos los elementos de la coleccion existen en la lista
     @Override
     public boolean contains(Collection<E> collection) {
-        if (collection == null || isEmpty()) {
+        if (isEmpty() || collection == null) {
             return false;
         }
         if (collection.size() == 0) {
@@ -323,6 +251,69 @@ public class LinkedList<E> extends AbstractList<E> {
             }
         }
         return true;
+    }
+
+    // retorna los primeros N elementos en un array sin eliminarlos
+    @SuppressWarnings("unchecked")
+    @Override
+    public E[] peekArray(int cuantity) {
+        Object[] array = new Object[cuantity];
+        if (isEmpty() || cuantity <= 0 || size < cuantity) {
+            return (E[]) array;
+        }
+        LinkedNode<E> node = head;
+        for (int i = 0; i < cuantity; i++) {
+            array[i] = node.get();
+            node = node.getNext();
+        }
+        return (E[]) array;
+    }
+
+    // retorna los ultimos N elementos en un array sin eliminarlos
+    @SuppressWarnings("unchecked")
+    @Override
+    public E[] peekLastArray(int cuantity) {
+        Object[] array = new Object[cuantity];
+        if (isEmpty() || cuantity <= 0 || size < cuantity) {
+            return (E[]) array;
+        }
+        LinkedNode<E> node = tail;
+        for (int i = cuantity - 1; i >= 0; i--) {
+            array[i] = node.get();
+            node = node.getPrevious();
+        }
+        return (E[]) array;
+    }
+    
+    // retorna los primeros N elementos en una coleccion sin eliminarlos
+    @Override
+    public List<E> peekCollection(int cuantity) {
+        List<E> list = new LinkedList<>();
+        if (isEmpty() || cuantity <= 0 || size < cuantity) {
+            return list;
+        }
+        
+        LinkedNode<E> node = head;
+        for (int i = 0; i < cuantity; i++) {
+            list.add(node.get());
+            node = node.getNext();
+        }
+        return list;
+    }
+
+    // retorna los ultimos N elementos en una coleccion sin eliminarlos
+    @Override
+    public List<E> peekLastCollection(int cuantity) {
+        List<E> list = new LinkedList<>();
+        if (isEmpty() || cuantity <= 0 || size < cuantity) {
+            return list;
+        }
+        LinkedNode<E> node = tail;
+        for (int i = 0; i < cuantity; i++) {
+            list.addFirst(node.get());
+            node = node.getPrevious();
+        }
+        return list;
     }
 
     // elimina la primera ocurrencia de un elemento
@@ -340,16 +331,14 @@ public class LinkedList<E> extends AbstractList<E> {
                 return false;
             }
         } else {
-            do { 
+            while (node != null) {
                 if (node.get().equals(element)) {
                     if (node == head) {
                         head = head.getNext();
-                        head.setPrevious(flag);
-                        flag.setNext(head);
-                    } else if (node == flag) {
-                        flag = node.getPrevious();
-                        flag.setNext(head);
-                        head.setPrevious(flag);
+                        head.setPrevious(null);
+                    } else if (node == tail) {
+                        tail = node.getPrevious();
+                        tail.setNext(null);
                     } else {
                         node.getPrevious().setNext(node.getNext());
                         node.getNext().setPrevious(node.getPrevious());
@@ -358,7 +347,7 @@ public class LinkedList<E> extends AbstractList<E> {
                     return true;
                 }
                 node = node.getNext();
-            } while (node != head);
+            }
         }
         return false;
     }
@@ -405,7 +394,7 @@ public class LinkedList<E> extends AbstractList<E> {
         int count = size;
         LinkedNode<E> node = head;
         for (int i = 0; i < count; i++) {
-            if (isEmpty()) {
+            if (node == null) {
                 break;
             }
             LinkedNode<E> next = node.getNext();
@@ -430,8 +419,7 @@ public class LinkedList<E> extends AbstractList<E> {
             return element;
         }
         head = head.getNext();
-        head.setPrevious(flag);
-        flag.setNext(head);
+        head.setPrevious(null);
         size--;
         return element;
     }
@@ -442,14 +430,13 @@ public class LinkedList<E> extends AbstractList<E> {
         if (isEmpty()) {
             return null;
         }
-        E element = flag.get();
+        E element = tail.get();
         if (size == 1) {
             clear();
             return element;
         }
-        flag = flag.getPrevious();
-        flag.setNext(head);
-        head.setPrevious(flag);
+        tail = tail.getPrevious();
+        tail.setNext(null);
         size--;
         return element;
     }
@@ -518,18 +505,6 @@ public class LinkedList<E> extends AbstractList<E> {
         return collection;
     }
 
-    // elimina todos los elementos de la lista
-    @Override
-    public boolean clear() {
-        try {
-            this.head = this.flag = null;
-            size = 0;
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
     // reemplaza el valor de un elemento por otro
     @Override
     public boolean set(E index, E element) {
@@ -540,13 +515,13 @@ public class LinkedList<E> extends AbstractList<E> {
             return false;
         }
         LinkedNode<E> node = head;
-        do { 
+        while (node != null) {
             if (node.get().equals(index)) {
                 node.set(element);
                 return true;
             }
             node = node.getNext();
-        } while (node != head);
+        }
         return false;
     }
 
@@ -559,8 +534,9 @@ public class LinkedList<E> extends AbstractList<E> {
         if (isEmpty()) {
             return false;
         }
+        // Devolver true cuando se hace el reemplazo
         LinkedNode<E> node = head;
-        do { 
+        while (node != null) {
             if (node.get().equals(element)) {
                 if (comparator.test(node.get())) {
                     node.set(newElement);
@@ -568,7 +544,7 @@ public class LinkedList<E> extends AbstractList<E> {
                 }
             }
             node = node.getNext();
-        } while (node != head);
+        }
         return false;
     }
 
@@ -596,7 +572,7 @@ public class LinkedList<E> extends AbstractList<E> {
         }
         return replaced;
     }
-
+    
     // reemplaza elementos de la coleccion por otros si cumplen con el comparador
     @Override
     public boolean replace(Collection<E> collection, Collection<E> newCollection, Predicate<E> comparator) {
@@ -634,14 +610,9 @@ public class LinkedList<E> extends AbstractList<E> {
             return false;
         }
         LinkedNode<E> node = head;
-        int count = size;
-        for (int i = 0; i < count; i++) {
-            if (isEmpty()) {
-                break;
-            }
+        while (node != null) {
             boolean found = false;
             LinkedNode<E> next = node.getNext();
-
             for (E element : array) {
                 if (node.get().equals(element)) {
                     found = true;
@@ -666,11 +637,7 @@ public class LinkedList<E> extends AbstractList<E> {
             return false;
         }
         LinkedNode<E> node = head;
-        int count = size;
-        for (int i = 0; i < count; i++) {
-            if (isEmpty()) {
-                break;
-            }
+        while (node != null) {
             boolean found = false;
             Iterator<E> iterator = collection.iterator();
             LinkedNode<E> next = node.getNext();
@@ -700,8 +667,7 @@ public class LinkedList<E> extends AbstractList<E> {
         }
         boolean start = false;
         LinkedNode<E> node = head;
-        int count = 0;
-        do { 
+        while (node != null) {
             if (node.get().equals(to) && !start) {
                 return list;
             }
@@ -715,8 +681,7 @@ public class LinkedList<E> extends AbstractList<E> {
                 break;
             }
             node = node.getNext();
-            count++;
-        } while (node != head && count < size);
+        }
         return list;
     }
 
@@ -759,10 +724,11 @@ public class LinkedList<E> extends AbstractList<E> {
 
         LinkedNode<E> node = head;
         int i = 0;
-        do {
+        while (node != null) {
             node.set((E) array[i++]);
             node = node.getNext();
-        } while (node != head);
+        }
+        
         return true;
     }
 
@@ -772,60 +738,54 @@ public class LinkedList<E> extends AbstractList<E> {
         if (isEmpty() || size < 2) {
             return false;
         }
+
         LinkedNode<E> node = head;
 
-        do { 
+        while (node != null) {
             LinkedNode<E> next = node.getNext();
-            LinkedNode<E> temp = node.getNext();
             node.setNext(node.getPrevious());
-            node.setPrevious(temp);
+            node.setPrevious(next);
             node = next;
-        } while (node != head);
-        
+        }
         LinkedNode<E> temp = head;
-        head = flag;
-        flag = temp;
+        head = tail;
+        tail = temp;
         return true;
     }
 
-
-    // retorna un iterador que puede recorrer la lista circular
+    // retorna un iterador que puede recorrer la lista hacia adelante y hacia atras
     @Override
-    public Iterator<E> iterator() { 
+    public Iterator<E> iterator() {
         return new Iterator<E>() {
-            int contador = 0;
-            int contadorPrevious = 0;
-            private LinkedNode<E> current = head;
-            private LinkedNode<E> current2 = flag;
+            private LinkedNode<E> front = head;
+            private LinkedNode<E> back = tail;
 
             @Override
             public boolean hasNext() {
-                return contador < size;
-            }
-
-            public boolean hasPrevious() {
-                return contadorPrevious < size;
+                return front != null;
             }
 
             @Override
             public E next() {
                 if (!hasNext()) {
-                    throw new IllegalStateException("No more elements");
+                    throw new IllegalStateException("No hay más elementos");
                 }
-                E element = current.get();
-                current = current.getNext();
-                contador++;
+                E element = front.get();
+                front = front.getNext();
                 return element;
+            }
+
+            public boolean hasPrevious() {
+                return back != null;
             }
 
             @SuppressWarnings("unused")
             public E previous() {
                 if (!hasPrevious()) {
-                    throw new IllegalStateException("No more elements");
+                    throw new IllegalStateException("No hay más elementos");
                 }
-                E element = current2.get();
-                current2 = current2.getPrevious();
-                contadorPrevious++;
+                E element = back.get();
+                back = back.getPrevious();
                 return element;
             }
         };
@@ -841,9 +801,9 @@ public class LinkedList<E> extends AbstractList<E> {
             return;
         }
         LinkedNode<E> node = head;
-        do { 
+        while (node != null) {
             action.apply(node.get());
             node = node.getNext();
-        } while (node != head);
+        }
     }
 }

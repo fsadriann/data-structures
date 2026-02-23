@@ -1,5 +1,6 @@
-package edu.fsadriann.model.array;
+package edu.fsadriann.app.array;
 
+import edu.fsadriann.model.array.AbstractArray;
 import edu.fsadriann.model.iterator.Iterator;
 import edu.fsadriann.model.collection.Collection;
 import java.util.function.Function;
