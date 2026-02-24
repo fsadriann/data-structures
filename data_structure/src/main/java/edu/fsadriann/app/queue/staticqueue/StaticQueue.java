@@ -10,9 +10,13 @@ import java.util.function.Function;
 public class StaticQueue<E> extends AbstractQueue<E> {
 
     private final Array<E> array;
+    private int top; // es el tail
+    private int head;
 
     public StaticQueue(){
         array=new Array<>();
+        this.head = -1;
+        this.top = -1;
     }
 
     public StaticQueue(Array<E> array){
@@ -21,25 +25,59 @@ public class StaticQueue<E> extends AbstractQueue<E> {
 
     @Override
     public E peek() {
-        return array.get(0);
+        if (isEmpty()) return null;
+        return array.get(head);
     }
 
     @Override
-    public E extract(){
-        E element=array.get(0);
-        array.remove(0);
+    public E extract() {
+
+        if (isEmpty()) return null;
+
+        E element = array.get(head);
+
+        if (head == top) {
+            head = -1;
+            top = -1;
+        } else {
+            head = (head + 1) % 1000;
+        }
+
         return element;
     }
 
     @Override
     public boolean insert(E element) {
-        array.add(element);
+
+        if (size() == 1000) return false; // llena
+
+        if (isEmpty()) {
+            array.add(element);
+            head = 0;
+            top = 0;
+            return true;
+        }
+
+        top = (top + 1) % 1000;
+
+        if (top >= array.size()) {
+            array.add(element);   // todavía estamos llenando por primera vez
+        } else {
+            array.set(top, element); // reutilizamos espacio
+        }
+
         return true;
     }
 
     @Override
     public int size() {
-        return array.size();
+
+        if (head == -1) return 0;
+
+        if (top >= head)
+            return top - head + 1;
+
+        return 1000 - head + top + 1;
     }
 
     @Override
@@ -49,7 +87,7 @@ public class StaticQueue<E> extends AbstractQueue<E> {
 
     @Override
     public boolean isEmpty() {
-        return array.isEmpty();
+        return head == -1;
     }
 
     @Override
@@ -69,6 +107,8 @@ public class StaticQueue<E> extends AbstractQueue<E> {
 
     @Override
     public boolean clear() {
+        head = -1;
+        top = -1;
         return array.clear();
     }
 
