@@ -22,10 +22,12 @@ public class PriorityQueue<E> extends AbstractPriorityQueue<E> {
     // constructor con un elemento inicial
     public PriorityQueue(E element) {
         this.array = new Array<>();
-        this.array.add(element);
+        if (element != null) {
+            this.array.add(element);
+        }
     }
 
-    // ve cual es el siguiente elemento sin sacarlo de la cola
+    // ve cuál es el siguiente elemento sin sacarlo de la cola
     // retorna el primero o null si esta vacia
     @Override
     public E peek() {
@@ -64,11 +66,9 @@ public class PriorityQueue<E> extends AbstractPriorityQueue<E> {
         if (element == null || index < 0 || index > size()) {
             return false;
         }
-        // si el indice es igual al tamanio agregamos al final
         if (index == size()) {
             return array.add(element);
         }
-        // creamos un array temporal con el nuevo elemento
         @SuppressWarnings("unchecked")
         E[] tempArray = (E[]) new Object[1];
         tempArray[0] = element;
@@ -90,7 +90,7 @@ public class PriorityQueue<E> extends AbstractPriorityQueue<E> {
         Iterator<E> iterator = array.iterator();
         while (iterator.hasNext()) {
             E current = iterator.next();
-            if (current != null && current.equals(element)) {
+            if (element.equals(current)) {
                 return true;
             }
         }
