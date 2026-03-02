@@ -35,7 +35,7 @@ public class PriorityQueue<E> extends AbstractPriorityQueue<E> {
         return array.get(0);
     }
 
-    // saca el elemento con mas prioridad y lo elimina de la cola
+    // saca el elemento con más prioridad y lo elimina de la cola
     // retorna el primero o null si esta vacia
     @Override
     public E extract() {
