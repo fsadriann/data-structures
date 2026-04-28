@@ -9,6 +9,7 @@ import edu.fsadriann.model.collection.Collection;
 import edu.fsadriann.model.iterator.Iterator;
 import edu.fsadriann.model.list.AbstractList;
 import edu.fsadriann.model.list.List;
+import edu.fsadriann.app.linkedlist.singly.singly.LinkedList;
 
 public class LinkedList<E> extends AbstractList<E> {
 

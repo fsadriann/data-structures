@@ -1,4 +1,4 @@
-package edu.fsadriann.app.stack;
+package edu.fsadriann.model.stack;
 
 public interface Stack<E> {
 

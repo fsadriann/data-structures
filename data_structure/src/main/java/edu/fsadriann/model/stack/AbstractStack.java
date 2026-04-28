@@ -3,7 +3,6 @@ package edu.fsadriann.model.stack;
 import java.util.function.Function;
 
 import edu.fsadriann.app.linkedlist.singly.singly.LinkedList;
-import edu.fsadriann.app.stack.Stack;
 import edu.fsadriann.model.collection.AbstractCollection;
 import edu.fsadriann.model.collection.Collection;
 import edu.fsadriann.model.iterator.Iterator;

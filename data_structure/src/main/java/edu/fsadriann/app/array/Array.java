@@ -1,67 +1,49 @@
 package edu.fsadriann.app.array;
 
-import edu.fsadriann.model.array.AbstractArray;
-import edu.fsadriann.model.iterator.Iterator;
-import edu.fsadriann.model.collection.Collection;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import edu.fsadriann.model.array.AbstractArray;
+import edu.fsadriann.model.collection.Collection;
+import edu.fsadriann.model.iterator.Iterator;
 
-/**
- * Un array genérico para guardar elementos del mismo tipo.
- * Se puede acceder a los elementos por su posición.
- */
-public class Array<E> extends AbstractArray<E> {
+public class Array<E> extends AbstractArray<E>{
 
     private E[] array;
-    private int size;
-    private static final int DEFAULT_CAPACITY = 1000;
+    private int capacity;
+    private int actual;
+    public int head;
+    public int tail;
 
-    // Crea un nuevo array vacío
     @SuppressWarnings("unchecked")
-    public Array() {
-        this.array = (E[]) new Object[DEFAULT_CAPACITY];
-        this.size = 0;
-    }
-
-    // --- Información básica del array ---
-
-    @Override
-    public int size() {
-        return size;
+    public Array(int size){
+        array = (E[]) new Object[size];
+        this.capacity = size;
+        this.actual=0;
     }
 
     @Override
-    public boolean isEmpty() {
-        return size == 0;
+    public boolean isEmpty(){
+        return actual==0;
     }
 
     @Override
-    public boolean clear() {
-        for (int i = 0; i < size; i++) {
-            array[i] = null;
+    public int size(){
+        return actual;
+    }
+
+    @Override
+    public boolean contains(Collection<E> collection){
+        if(collection==null){
+            return true;
         }
-        size = 0;
-        return true;
-    }
-
-    @Override
-    public boolean reverse() {
-        for (int i = 0; i < size / 2; i++) {
-            E temp = array[i];
-            array[i] = array[size - 1 - i];
-            array[size - 1 - i] = temp;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean contains(Collection<E> collection) {
-        if (collection == null) {
+        if(isEmpty()){
             return false;
         }
-        Iterator<E> iterator = collection.iterator();
-        while (iterator.hasNext()) {
-            if (!contains(iterator.next())) {
+
+        Iterator<E> iterator=collection.iterator();
+        while(iterator.hasNext()){
+            if(!contains(iterator.next())){
                 return false;
             }
         }
@@ -69,181 +51,288 @@ public class Array<E> extends AbstractArray<E> {
     }
 
     @Override
-    public void forEach(Function<E, Void> action) {
-        if (action == null) {
-            return;
+    public boolean clear(){
+        for(int i=0;i<capacity;i++){
+            array[i]=null;
         }
-        Iterator<E> iterator = iterator();
-        while (iterator.hasNext()) {
-            action.apply(iterator.next());
-        }
+        actual=0;
+        head=0;
+        tail=-1;
+        return true;
     }
 
-    // --- Recorrer los elementos ---
+    @Override
+    public boolean reverse(){
+        if(actual==1||isEmpty()){
+            return true;
+        }
+        for(int i=0;i<actual/2;i++){
+
+            int a=(head+i)%capacity;
+            int b=(head+actual-1-i)%capacity;
+
+            E tem=array[a];
+            array[a]=array[b];
+            array[b]=tem;
+        }
+        return true;
+    }
 
     @Override
-    public Iterator<E> iterator() {
-        return new Iterator<E>() {
-            private int index = 0;
+    public boolean add(E element){
+        if(actual==capacity||element==null){
+            return false;
+        }
 
-            @Override
-            public boolean hasNext() {
-                return index < size;
+        if(actual==0){
+            head=0;
+            tail=0;
+        }else{
+            tail=(tail+1)%capacity;
+        }
+
+        array[tail]=element;
+        actual++;
+        return true;
+    }
+
+    @Override
+    public boolean add(int index,E[] array){
+        if(array==null||index>actual||index<0||(actual+array.length)>capacity){
+            return false;
+        }
+
+
+        for(int i=actual-1;i>=index;i--){
+            int from=(head+i)%capacity;
+            int to=(head+i+array.length)%capacity;
+            this.array[to]=this.array[from];
+        }
+
+        for(int i=0;i<array.length;i++){
+            int pos=(head+index+i)%capacity;
+            this.array[pos]=array[i];
+        }
+        tail=(head+actual+array.length-1)%capacity;
+
+        actual+=array.length;
+        return true;
+    }
+
+    @Override
+    public boolean add(int index, Collection<E> collection){
+        if(collection==null||index>actual||index<0||(actual+collection.size())>capacity){
+            return false;
+        }
+        int n=collection.size();
+        for(int i=actual-1;i>=index;i--){
+            int from=(head+i)%capacity;
+            int to=(head+i+n)%capacity;
+            this.array[to]=this.array[from];
+        }
+        int i=0;
+        Iterator<E> iterator=collection.iterator();
+        while(iterator.hasNext()){
+            int pos=(head+index+i)%capacity;
+            array[pos]=iterator.next();
+            i++;
+        }
+
+        tail=(head+actual+n-1)%capacity;
+        actual+=n;
+        return true;
+    }
+
+    @Override
+    public E get(int index){
+        if(index<0||index>=actual||isEmpty()){
+            return null;
+        }
+        int indexReal=(head+index)%capacity;
+
+        return array[indexReal];
+    }
+    @Override
+    public int indexOf(E element){
+        if(element==null||isEmpty()){
+            return -1;
+        }
+        for(int i=0;i<actual;i++){
+            int index=(head+i)%capacity;
+            if(element.equals(array[index])){
+                return i;
             }
+        }
+        return -1;
+    }
+    @Override
+    public int lastIndexOf(E element){
+        if(element==null||isEmpty()){
+            return -1;
+        }
+        for(int i=actual-1;i>=0;i--){
+            int index=(head+i)%capacity;
+            if(element.equals(array[index])){
+                return i;
+            }
+        }
+        return -1;
+    }
+    @Override
+    public boolean remove(int index){
+        if(index<0||index>=actual||isEmpty()){
+            return false;
+        }
+
+        for(int i=index;i<actual-1;i++){
+            int from=(head+i+1)%capacity;
+            int to=(head+i)%capacity;
+            array[to]=array[from];
+        }
+
+        if(actual==1){
+            return clear();
+        }else{
+            int tailIndex=(head+actual-1)%capacity;
+            array[tailIndex]=null;
+            tail=(head+actual-2+capacity)%capacity;
+            actual--;
+            return true;
+        }
+    }
+    @Override
+    public boolean remove(int from, int to){
+        if(from<0 || to<0 || isEmpty()||to>actual||from>=to){
+            return false;
+        }
+        int count=to-from;
+        for(int i=from;i<actual-count;i++){
+            int fromIndex=(head+i+count)%capacity;
+            int toIndex=(head+i)%capacity;
+            array[toIndex]=array[fromIndex];
+        }
+
+        for(int i=actual-count;i<actual;i++){
+            int index=(head+i)%capacity;
+            array[index]=null;
+        }
+        actual-=count;
+        if(actual==0){
+            head=0;
+            tail=-1;
+        }else{
+            tail=(head+actual-1)%capacity;
+        }
+        return true;
+
+
+    }
+
+    @Override
+    public boolean set(int index, E element){
+        if(element==null||index<0||index>=actual){
+            return false;
+        }
+
+        int indexReal=(head+index)%capacity;
+
+        array[indexReal]=element;
+        return true;
+    }
+
+    @Override
+    public Iterator<E> iterator(){
+        return new Iterator<>(){
+            private int index=0;
 
             @Override
-            public E next() {
-                return array[index++];
+            public boolean hasNext(){
+                return index<actual;
+            }
+            @Override
+            public E next(){
+                if(!hasNext()){
+                    throw new NoSuchElementException("No more elements");
+                }
+
+                int index2=(head+index)%capacity;
+                E element=array[index2];
+                index++;
+                return element;
             }
         };
     }
 
-    // --- Agregar elementos ---
+    @Override
+    public void forEach(Function<E, Void> action){
+        if(action==null||isEmpty()){
+            return;
+        }
+        Iterator<E> iterator=iterator();
+        while(iterator.hasNext()){
+            action.apply(iterator.next());
+        }
+
+    }
 
     @Override
-    public boolean add(E element) {
-        if (size == array.length) {
+    public boolean remove(Predicate<E> filter){
+        if(filter==null||isEmpty()){
             return false;
         }
-        array[size++] = element;
-        return true;
-    }
 
-    @Override
-    public boolean add(int index, E[] elements) {
-        if (elements == null || index < 0 || index > size) {
-            return false;
-        }
-        if ((size + elements.length) > array.length) {
-            return false;
-        }
-        shiftRight(index, elements.length);
-        for (int i = 0; i < elements.length; i++) {
-            array[index + i] = elements[i];
-        }
-        size += elements.length;
-        return true;
-    }
+        int i=0;
+        boolean removed=false;
+        while(i<actual){
+            int realIndex=(head+i)%capacity;
+            E value=array[realIndex];
 
-    @Override
-    public boolean add(int index, Collection<E> collection) {
-        if (collection == null || index < 0 || index > size) {
-            return false;
-        }
-        if ((collection.size() + size) > array.length) {
-            return false;
-        }
-        shiftRight(index, collection.size());
-        Iterator<E> iterator = collection.iterator();
-        int i = 0;
-        while (iterator.hasNext()) {
-            array[index + i++] = iterator.next();
-        }
-        size += collection.size();
-        return true;
-    }
-
-    // --- Obtener elementos ---
-
-    @Override
-    public E get(int index) {
-        if (index < 0 || index >= size) {
-            return null;
-        }
-        return array[index];
-    }
-
-    @Override
-    public int indexOf(E element) {
-        for (int i = 0; i < size; i++) {
-            if (array[i].equals(element)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    @Override
-    public int lastIndexOf(E element) {
-        for (int i = size - 1; i >= 0; i--) {
-            if (array[i].equals(element)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    // --- Quitar elementos ---
-
-    @Override
-    public boolean remove(int index) {
-        return remove(index, index);
-    }
-
-    @Override
-    public boolean remove(int from, int to) {
-        if (from < 0 || to >= size || from > to) {
-            return false;
-        }
-        int count = to - from + 1;
-        shiftLeft(from, count);
-        size -= count;
-        return true;
-    }
-
-    @Override
-    public boolean remove(Predicate<E> filter) {
-        if (filter == null) {
-            return false;
-        }
-        int i = 0;
-        while (i < size) {
-            if (filter.test(array[i])) {
+            if(filter.test(value)){
                 remove(i);
-            } else {
+                removed=true;
+            }else{
                 i++;
             }
+
         }
-        return true;
+        return removed;
     }
 
-    // --- Cambiar elementos ---
-
+    @SuppressWarnings("unchecked")
     @Override
-    public boolean set(int index, E element) {
-        if (index < 0 || index >= size) {
+    public void defragment(){
+        if(actual==0){
+            head=0;
+            tail=-1;
+            return;
+        }
+
+        E[] nuevo=(E[]) new Object[capacity];
+
+        for(int i=0;i<actual;i++){
+            nuevo[i]=array[(head+i)%capacity];
+        }
+        array=nuevo;
+        head=0;
+        tail=actual-1;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean dimension(int dimension){
+        if(dimension<actual||dimension<=0){
             return false;
         }
-        array[index] = element;
-        return true;
-    }
+        E[] nuevo=(E[]) new Object[dimension];
 
-    // --- Gestión del espacio ---
-
-    @Override
-    public void defragment() {
-        // El array se mantiene organizado automáticamente
-    }
-
-    @Override
-    public boolean dimension(int newDimension) {
-        // Para aumentar el tamaño del array en el futuro
-        return true;
-    }
-
-    // --- Funciones internas de ayuda ---
-
-    // Corre los elementos hacia la derecha para hacer espacio
-    private void shiftRight(int startIndex, int count) {
-        for (int i = size - 1; i >= startIndex; i--) {
-            array[i + count] = array[i];
+        for(int i=0;i<actual;i++){
+            nuevo[i]=array[((head+i)%capacity)];
         }
-    }
 
-    // Corre los elementos hacia la izquierda para cerrar espacios vacíos
-    private void shiftLeft(int startIndex, int count) {
-        for (int i = startIndex; i < size - count; i++) {
-            array[i] = array[i + count];
-        }
+        array=nuevo;
+        capacity=dimension;
+        head=0;
+        tail=actual-1;
+        return true;
     }
 }
