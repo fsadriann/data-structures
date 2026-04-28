@@ -8,9 +8,14 @@ import java.util.function.Function;
 
 public class Queue<E> extends AbstractQueue<E> {
 
+    private static final int DEFAULT_CAPACITY = 10;
     private final Array<E> array;
 
     public Queue(){
+        this.array = new Array<>(DEFAULT_CAPACITY);
+    }
+
+    public Queue(int capacity){
         this.array = new Array<>(capacity);
     }
 
