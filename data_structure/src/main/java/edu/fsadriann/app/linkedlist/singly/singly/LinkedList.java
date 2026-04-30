@@ -9,632 +9,515 @@ import edu.fsadriann.model.collection.Collection;
 import edu.fsadriann.model.iterator.Iterator;
 import edu.fsadriann.model.list.AbstractList;
 import edu.fsadriann.model.list.List;
-import edu.fsadriann.app.linkedlist.singly.singly.LinkedList;
 
 public class LinkedList<E> extends AbstractList<E> {
 
-  private transient LinkedNode<E> head;
-  private transient LinkedNode<E> tail;
-  private transient LinkedNode<E> inode;
+    private int size;
+    private LinkedNode<E> head;
+    private LinkedNode<E> tail;
 
-  public LinkedList() {
-    head = tail = null;
-  }
+    public LinkedList() {
+        size = 0;
+        this.head = this.tail = null;
+    }
 
-  public LinkedList(E element) {
-    this.head = new LinkedNode<>(element);
-  }
-
-  public boolean add(E element) {
-    try {
-      if (isEmpty()) {
+    public LinkedList(E element) {
+        size = 1;
         LinkedNode<E> node = new LinkedNode<>(element);
         this.head = this.tail = node;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return this.head == null;
+    }
+
+    @Override
+    public String toString() {
+        return "LinkedList [head=" + head + "]";
+    }
+
+    @Override
+    public E peek() {
+        if (isEmpty()) return null;
+        return this.head.get();
+    }
+
+    @Override
+    public E peekLast() {
+        if (isEmpty()) return null;
+        return this.tail.get();
+    }
+
+    @Override
+    public boolean add(E element) {
+        if (element == null) return false;
+        if (isEmpty()) {
+            LinkedNode<E> node = new LinkedNode<>(element);
+            this.head = this.tail = node;
+        } else {
+            LinkedNode<E> node = new LinkedNode<>(element);
+            this.tail.setNext(node);
+            this.tail = node;
+        }
+        size++;
         return true;
-      } else {
+    }
+
+    @Override
+    public boolean add(E[] array) {
+        if (array == null) return false;
+        for (E element : array) add(element);
+        return true;
+    }
+
+    @Override
+    public boolean add(Collection<E> collection) {
+        if (collection == null) return false;
+        Iterator<E> iterator = collection.iterator();
+        while (iterator.hasNext()) add(iterator.next());
+        return true;
+    }
+
+    @Override
+    public boolean addFirst(E element) {
+        if (element == null) return false;
         LinkedNode<E> node = new LinkedNode<>(element);
-        this.tail.setNext(node);
-        this.tail = node;
+        if (isEmpty()) {
+            this.head = this.tail = node;
+        } else {
+            node.setNext(this.head);
+            this.head = node;
+        }
+        size++;
         return true;
-      }
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
-      return false;
     }
 
-  }
-
-  public boolean isEmpty() {
-    return this.head == null;
-  }
-
-  @Override
-  public String toString() {
-    return "LinkedList [head=" + head + "]";
-  }
-
-  @Override
-  public boolean add(E[] array) {
-    if (array == null){
-      return false;
-    }
-    for (E element : array) {
-      if (!add(element)) {
-        return false;
-    }
-  }
-  return true;
-  }
-
-  @Override
-  public boolean add(Collection<E> collection) {
-    Iterator<E> iterator = collection.iterator();
-    while(iterator.hasNext()){
-      if (!add(iterator.next())) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  @Override
-  public boolean addFirst(E element) {
-    try {
-      LinkedNode<E> node = new LinkedNode<E>(element);
-      node.setNext(head);
-      head = node;
-      if (tail == null) {
-        tail = node;
-      }
-      return true;
-
-    } catch (Exception e) {
-      return false;
+    @Override
+    public boolean addFirst(E[] array) {
+        if (array == null) return false;
+        for (E element : array) addFirst(element);
+        return true;
     }
 
-  }
+    @Override
+    public boolean addFirst(Collection<E> collection) {
+        if (collection == null) return false;
+        Iterator<E> iterator = collection.iterator();
+        while (iterator.hasNext()) addFirst(iterator.next());
+        return true;
+    }
 
-  @Override
-  public boolean addFirst(E[] array) {
-    if (array == null){
-      return false;
+    @Override
+    @SuppressWarnings("unchecked")
+    public E[] peekArray(int cuantity) {
+        if (isEmpty() || cuantity <= 0) return null;
+        if (size < cuantity) return null;
+        E[] array = (E[]) new Object[cuantity];
+        LinkedNode<E> n = head;
+        int i = 0;
+        while (i < cuantity) {
+            array[i] = n.get();
+            n = n.getNext();
+            i++;
+        }
+        return array;
     }
-    for (int i = array.length - 1; i >= 0; i--) {
-      if (!addFirst(array[i])) {
-        return false;
-      }
-    }
-    return true;
-  }
 
-  @Override
-  public boolean addFirst(Collection<E> collection) {
-    Iterator<E> iterator = collection.iterator();
-    while(iterator.hasNext()){
-      if (!addFirst(iterator.next())) {
-        return false;
-      }
+    @Override
+    @SuppressWarnings("unchecked")
+    public E[] peekLastArray(int cuantity) {
+        if (isEmpty() || cuantity <= 0) return null;
+        if (size < cuantity) return null;
+        E[] array = (E[]) new Object[cuantity];
+        LinkedNode<E> n = head;
+        for (int i = 0; i < size - cuantity; i++) n = n.getNext();
+        for (int i = 0; i < cuantity; i++) {
+            array[i] = n.get();
+            n = n.getNext();
+        }
+        return array;
     }
-    return true;
-  }
 
-  @Override
-  public E peek() {
-    return this.head.get();
-  }
+    @Override
+    public List<E> peekCollection(int cuantity) {
+        if (isEmpty() || cuantity <= 0) return null;
+        if (size < cuantity) return null;
+        List<E> list = new LinkedList<>();
+        LinkedNode<E> node = head;
+        for (int i = 0; i < cuantity; i++) {
+            list.add(node.get());
+            node = node.getNext();
+        }
+        return list;
+    }
 
-  @Override
-  public E peekLast() {
-    return this.tail.get();
-  }
+    @Override
+    public List<E> peekLastCollection(int cuantity) {
+        if (isEmpty() || cuantity <= 0) return null;
+        if (size < cuantity) return null;
+        List<E> list = new LinkedList<>();
+        LinkedNode<E> node = head;
+        for (int i = 0; i < size - cuantity; i++) node = node.getNext();
+        for (int i = 0; i < cuantity; i++) {
+            list.add(node.get());
+            node = node.getNext();
+        }
+        return list;
+    }
 
-  @Override
-  @SuppressWarnings("unchecked")
-public E[] peekArray(int n) {
-    E[] result = (E[]) new Object[n];
-    LinkedNode<E> current = head;
-    
-    for (int i = 0; i < n; i++) {
-        result[i] = current.get(); // obtiene el nodo actual
-        current = current.getNext(); // avanza al siguiente
-    }
-    
-    return result;
-}
-  @Override
-  @SuppressWarnings("unchecked")
-public E[] peekLastArray(int n) {
-    E[] result = (E[]) new Object[n];
-    LinkedNode<E> current = head;
-    
-    // 1. avanzas hasta la posición size() - n
-    int start = size() - n;
-    for (int i = 0; i < start; i++) {
-        current = current.getNext();
-    }
-    
-    // 2. desde ahí obtienes los n elementos
-    for (int i = 0; i < n; i++) {
-        result[i] = current.get();
-        current = current.getNext();
-    }
-    
-    return result;
-}
-
-@Override
-public List<E> peekCollection(int n) {
-    LinkedList<E> result = new LinkedList<>();
-    LinkedNode<E> current = head;
-    
-    for (int i = 0; i < n; i++) {
-        result.add(current.get());   // agrega sin eliminar
-        current = current.getNext(); // avanza
-    }
-    
-    return result;
-  }
-@Override
-public List<E> peekLastCollection(int n) {
-    LinkedList<E> result = new LinkedList<>();
-    LinkedNode<E> current = head;
-    
-    // 1. avanzas hasta la posición size() - n
-    int start = size() - n;
-    for (int i = 0; i < start; i++) {
-        current = current.getNext();
-    }
-    
-    // 2. desde ahí obtienes los n elementos
-    for (int i = 0; i < n; i++) {
-        result.add(current.get());
-        current = current.getNext();
-    }
-    
-    return result;
-}
-
-  @Override
-public E poll() {
-    if (isEmpty()) {
-        return null;
-    }
-    
-    E element = head.get();  // guardas el elemento
-    head = head.getNext();   // mueves el head al siguiente
-    
-    if (head == null) {      // si la lista quedó vacía
-        tail = null;         // tail también es null
-    }
-    
-    return element;          // retornas el elemento eliminado
-}
-
-  @Override
-public E pollLast() {
-    
-    // 1. si la lista está vacía no hay nada que eliminar
-    if (isEmpty()) {
-        return null;
-    }
-    
-    // 2. guardas el elemento del tail antes de eliminarlo
-    E element = tail.get();
-    
-    // 3. caso especial: si solo hay un nodo
-    // head y tail apuntan al mismo nodo
-    if (head == tail) {
-        head = null;  // la lista queda vacía
-        tail = null;
+    @Override
+    public E poll() {
+        if (isEmpty()) return null;
+        E element = head.get();
+        if (size == 1) {
+            clear();
+            return element;
+        }
+        head = head.getNext();
+        size--;
         return element;
     }
-    
-    // 4. recorres hasta encontrar el nodo ANTES del tail
-    // paras cuando el siguiente de current es el tail
-    LinkedNode<E> current = head;
-    while (current.getNext() != tail) {
-        current = current.getNext();
+
+    @Override
+    public E pollLast() {
+        if (isEmpty()) return null;
+        E element = tail.get();
+        if (size == 1) {
+            clear();
+            return element;
+        }
+        LinkedNode<E> node = head;
+        while (node.getNext() != tail) node = node.getNext();
+        node.setNext(null);
+        tail = node;
+        size--;
+        return element;
     }
-    
-    // 5. aquí current es el nodo anterior al tail
-    // ejemplo: [10] → [20] → [30]
-    //                  ↑        ↑
-    //               current    tail
-    
-    current.setNext(null);  // [20] ya no apunta a [30]
-    tail = current;         // [20] se convierte en el nuevo tail
-    
-    // 6. retornas el elemento eliminado
-    return element;
-}
-  @Override
-@SuppressWarnings("unchecked")
-public E[] pollArray(int n) {
-    E[] result = (E[]) new Object[n]; // creas un array de tamaño n
-    
-    for (int i = 0; i < n; i++) {
-        result[i] = poll(); // obtiene y elimina el primero en cada iteración
+
+    @Override
+    public E[] pollArray(int cuantity) {
+        if (isEmpty() || cuantity <= 0) return null;
+        if (size < cuantity) return null;
+        E[] array = peekArray(cuantity);
+        for (int i = 0; i < cuantity; i++) poll();
+        return array;
     }
-    
-    return result;
-}
 
-  @Override
-  @SuppressWarnings("unchecked")
-  public E[] pollLastArray(int n) {
-    E[] result = (E[]) new Object[n];
-    for (int i = 0; i < n; i++){
-      result[i] = pollLast(); //elimina al ultimo 
-
-
+    @Override
+    public E[] pollLastArray(int cuantity) {
+        if (isEmpty() || cuantity <= 0) return null;
+        if (size < cuantity) return null;
+        E[] array = peekLastArray(cuantity);
+        for (int i = 0; i < cuantity; i++) pollLast();
+        return array;
     }
-    return result;
-  }
 
-  @Override
-public List<E> pollCollection(int n) {
-    LinkedList<E> result = new LinkedList<>();
-    
-    for (int i = 0; i < n; i++) {
-        result.add(poll()); // agrega al final de la nueva lista
+    @Override
+    public List<E> pollCollection(int cuantity) {
+        if (isEmpty() || cuantity <= 0) return null;
+        if (size < cuantity) return null;
+        List<E> list = peekCollection(cuantity);
+        for (int i = 0; i < cuantity; i++) poll();
+        return list;
     }
-    
-    return result;
-}
 
-  @Override
-  public List<E> pollLastCollection(int n) {
-      LinkedList<E> result = new LinkedList<>();
-    
-      for (int i = 0; i < n; i++) {
-        result.add(pollLast());
-      }
-    
-      return result;
-}
-  
+    @Override
+    public List<E> pollLastCollection(int cuantity) {
+        if (isEmpty() || cuantity <= 0) return null;
+        if (size < cuantity) return null;
+        List<E> list = peekLastCollection(cuantity);
+        for (int i = 0; i < cuantity; i++) pollLast();
+        return list;
+    }
 
-  @Override
-  public boolean remove(E element) {
-    LinkedNode<E> previous = null;
-    LinkedNode<E> current = head;
-    
-    while (current != null) {
-        if (current.get().equals(element)) {
-            if (current == head) {
-                head = head.getNext();
-                return true;
-            } else if (current == tail) {
-                tail = previous;
-                previous.setNext(null);
-                return true;
+    @Override
+    public boolean remove(E element) {
+        if (isEmpty()) return false;
+        LinkedNode<E> previous = null;
+        LinkedNode<E> n = head;
+        while (n != null && !n.get().equals(element)) {
+            previous = n;
+            n = n.getNext();
+        }
+        if (n == null) return false;
+        if (n == head) {
+            if (size == 1) {
+                clear();
             } else {
-                previous.setNext(current.getNext());
-                return true; 
+                head = head.getNext();
+                size--;
+            }
+            return true;
+        }
+        if (n == tail) {
+            previous.setNext(null);
+            tail = previous;
+            size--;
+            return true;
+        }
+        previous.setNext(n.getNext());
+        size--;
+        return true;
+    }
+
+    @Override
+    public boolean remove(E[] array) {
+        if (isEmpty()) return false;
+        if (size < array.length) return false;
+        for (E x : array) while (remove(x)) {}
+        return true;
+    }
+
+    @Override
+    public boolean remove(Collection<E> collection) {
+        if (isEmpty()) return false;
+        if (size < collection.size()) return false;
+        Iterator<E> iterator = collection.iterator();
+        while (iterator.hasNext()) {
+            E val = iterator.next();
+            while (remove(val)) {}
+        }
+        return true;
+    }
+
+    @Override
+    public boolean remove(Predicate<E> filter) {
+        if (filter == null || isEmpty()) return false;
+        LinkedNode<E> node = head;
+        while (node != null) {
+            LinkedNode<E> next = node.getNext();
+            if (filter.test(node.get())) remove(node.get());
+            node = next;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean replace(E element, E newElement, Predicate<E> comparator) {
+        if (comparator == null || element == null || newElement == null) return false;
+        if (isEmpty()) return false;
+        for (LinkedNode<E> node = head; node != null; node = node.getNext()) {
+            if (node.get().equals(element) && comparator.test(node.get())) {
+                node.set(newElement);
+                break;
             }
         }
-        previous = current;
-        current = current.getNext();
-    }
-    return false;
-}
-
-
-  @Override
-public boolean remove(E[] array) {
-    
-    if (array == null){
-      return false;
-    }
-    for (E element : array) {
-        if (!remove(element)) {
-            return false;
-        }
-    }
-    
-    // 4. si eliminó todos los elementos del array exitosamente
-    return true;
-}
-  @Override
-public boolean remove(Collection<E> collection) {
-    
-    Iterator<E> iterator = collection.iterator();
-    
-    // 2. mientras haya elementos en la colección
-    while (iterator.hasNext()) {
-        
-        // 3. obtienes el siguiente elemento y lo intentas eliminar
-        // reutilizas el remove(E element)
-        if (!remove(iterator.next())) {
-            
-            // 4. si algún elemento no existía en la lista
-            // retorna false inmediatamente
-            return false;
-        }
-    }
-    
-    // 5. si eliminó todos los elementos exitosamente
-    return true;
-}
-  @Override
-  public boolean remove(Predicate<E> filter) {
-      if (isEmpty() || filter == null) {
-          return false;
-      }
-      
-      boolean anyRemoved = false;
-      LinkedNode<E> current = head;
-      
-      // Recorrer toda la lista y eliminar todos los elementos que cumplan
-      while (current != null) {
-          LinkedNode<E> next = current.getNext();  // Guardar el siguiente ANTES de eliminar
-          
-          if (filter.test(current.get())) {
-              remove(current.get());  // Eliminar el elemento actual
-              anyRemoved = true;
-          }
-          
-          current = next;  // Avanzar al siguiente nodo replace
-      }
-      
-      if (anyRemoved) {
-          return true;
-      }
-      return false;
-    }
-
-  @Override
-public boolean replace(E element, E newElement, Predicate<E> comparator) {
-    LinkedNode<E> current = head;
-    
-    while (current != null) {
-     if (comparator.test(current.get())) {  // evalúa el elemento actual del nodo
-    current.set(newElement);            // reemplaza con el nuevo valor
-    return true;
-    } 
-        current = current.getNext();
-    }
-    return false;
-}
-
-@Override
-public boolean replace(E[] array, E[] newArray, Predicate<E> comparator) {
-    for (int i = 0; i < array.length; i++) {
-        if (!replace(array[i],newArray[i] , comparator)) {
-            return false;
-        }
-    }
-    return true;
-}
-
-@Override
-public boolean replace(Collection<E> collection, Collection<E> newCollection, Predicate<E> comparator) {
-    Iterator<E> iteratorElements = collection.iterator();
-    Iterator<E> iteratorNew = newCollection.iterator();
-
-    boolean anyReplaced = false;
-    
-    while (iteratorElements.hasNext()) {
-        E element = iteratorElements.next();
-        E newElement = iteratorNew.next();
-
-        // Intenta reemplazar, si lo hace marca como true
-        if (replace(element, newElement, comparator)) {
-            anyReplaced = true;
-        }
-        // Si no lo reemplaza, continúa con el siguiente
-    }
-    
-    if (anyReplaced) {
         return true;
     }
-    return false;
-}
-@Override
-public boolean retain(E[] array) {
-    LinkedNode<E> current = head;
-    
-    while (current != null) {
-        E element = current.get();
-        current = current.getNext(); // avanzas ANTES de eliminar
-        
-        if (!contains(element)) {  
-            remove(element); //elimina el elemento
-        }
-    }
-    return true;
-}
-  @Override
-public boolean retain(Collection<E> collection) {
-    LinkedNode<E> current = head; // empiezas desde el head
 
-    while (current != null) { // recorres toda la lista
-        E element = current.get(); // guardas el elemento actual
-        current = current.getNext(); // avanzas ANTES de eliminar
-
-        if (!collection.contains(element)) { // si el elemento NO está en la colección
-            remove(element); // lo elimina de la lista
-        }
-    }
-    return true;
-}
-
-  @Override
-  public boolean set(E index, E element) {
-    LinkedNode<E> current = head;
-    while (current != null){
-      if (current.get().equals(index)){
-        current.set(element);
+    @Override
+    public boolean replace(E[] array, E[] newArray, Predicate<E> comparator) {
+        if (isEmpty() || comparator == null) return false;
+        if (array.length != newArray.length) return false;
+        if (size < array.length) return false;
+        for (int i = 0; i < array.length; i++) replace(array[i], newArray[i], comparator);
         return true;
-      }
-      current = current.getNext();
     }
-    return false;
-  }
 
-  @Override
-  public boolean sort(ToIntFunction<E> toInt) {
-    if (isEmpty() || head == tail){
-      return true; // No hay nada que ordenar si la lista está vacía o tiene un solo nodo
+    @Override
+    public boolean replace(Collection<E> collection, Collection<E> newCollection, Predicate<E> comparator) {
+        if (isEmpty() || collection == null || newCollection == null || comparator == null) return false;
+        if (collection.size() != newCollection.size()) return false;
+        if (size < collection.size()) return false;
+        Iterator<E> iterator = collection.iterator();
+        Iterator<E> iterator2 = newCollection.iterator();
+        while (iterator.hasNext()) replace(iterator.next(), iterator2.next(), comparator);
+        return true;
     }
-    boolean swapped = true; // controla si se hicieron cambios en la pasada
-    while (swapped) {
-      swapped = false;
-      LinkedNode<E> current = head;
-      while (current.getNext() != null) {
-        if(toInt.applyAsInt(current.get()) > toInt.applyAsInt(current.getNext().get())){
-          E temp = current.get();
-          current.set(current.getNext().get());
-          current.getNext().set(temp);
-          swapped = true; // se hizo un cambio, hay que seguir ordenando
+
+    @Override
+    public boolean set(E index, E element) {
+        if (isEmpty() || element == null || index == null) return false;
+        for (LinkedNode<E> node = head; node != null; node = node.getNext()) {
+            if (node.get().equals(index)) {
+                node.set(element);
+                return true;
+            }
         }
-        current = current.getNext();
-      }
+        return false;
     }
-    return true;
-  }
 
-  @Override
-  public List<E> subList(E from, E to) {
-    LinkedList<E> result = new LinkedList<>();
-    LinkedNode<E> current = head;
-    
-    boolean foundFrom = false;
-    while(current != null){
-      if(current.get().equals(from)){
-        foundFrom = true;
-      }
-      if (foundFrom){
-        result.add(current.get());
-      
-        if(current.get().equals(to)){
-          break;
+    @Override
+    public boolean retain(E[] array) {
+        if (isEmpty() || array == null) return false;
+        LinkedNode<E> node = head;
+        while (node != null) {
+            boolean found = false;
+            LinkedNode<E> next = node.getNext();
+            for (E element : array) {
+                if (node.get().equals(element)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) remove(node.get());
+            node = next;
         }
-      }
-      current = current.getNext();
+        return true;
     }
-    return result;
-  }
 
-  @Override
-  public E[] toArray() {
+    @Override
+    public boolean retain(Collection<E> collection) {
+        if (isEmpty() || collection == null) return false;
+        LinkedNode<E> node = head;
+        while (node != null) {
+            boolean found = false;
+            Iterator<E> iterator = collection.iterator();
+            LinkedNode<E> next = node.getNext();
+            while (iterator.hasNext()) {
+                if (node.get().equals(iterator.next())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) remove(node.get());
+            node = next;
+        }
+        return true;
+    }
+
+    @Override
+    public List<E> subList(E from, E to) {
+        List<E> list = new LinkedList<>();
+        if (from == null || to == null || isEmpty()) return list;
+        boolean start = false;
+        LinkedNode<E> node = head;
+        while (node != null) {
+            if (node.get().equals(to) && !start) return list;
+            if (node.get().equals(from)) start = true;
+            if (start) list.add(node.get());
+            if (node.get().equals(to)) break;
+            node = node.getNext();
+        }
+        return list;
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
-    E[] result = (E[]) new Object[size()];
-    LinkedNode<E> current = head;
-    int index = 0;
-    while (current != null){
-      result[index++] = current.get();
-      current = current.getNext();
-    }
-    return result;
-  }
-
-  @Override
-    public boolean clear() {
-      head = null;
-      tail = null;
-      return true;
-    }
-
-  @Override
-  public boolean contains(E element) {
-    LinkedNode<E> current = head;
-    while (current != null){
-      if(current.get().equals(element)){
-        return true;
-      }
-      current = current.getNext();
-
-    }
-    return false;
-  }
-
-  @Override
-  public boolean contains(E[] array) {
-    for(E element: array){
-      if(!contains(element)){
-        return false;
-      }
-    }
-    return true;
-  }
-
-  @Override
-  public boolean contains(Collection<E> collection) {
-    Iterator<E> iterator = collection.iterator();
-    while(iterator.hasNext()){
-      if(!contains(iterator.next())){
-        return false;
-      }
-    }
-    return true;
-  }
-
-  @Override
-  public boolean reverse() {
-    if (isEmpty() || head == tail) {
-        return true; // No hay nada que invertir si hay un solo nodo
-    }
-    LinkedNode<E> previous = null;
-    LinkedNode<E> current = head;
-    LinkedNode<E> next = null;
-
-    while(current != null){
-      next = current.getNext();
-      current.setNext(previous);
-      previous = current;
-      current = next;
-    }
-    LinkedNode<E> temp = head;
-    head = previous;
-    tail = temp;
-    return true;
-  }
-
-  @Override
-  public int size() {
-    int contador = 0;
-    LinkedNode<E> current = head;
-    while (current != null){
-      contador++;
-      current = current.getNext();
-    }
-    return contador;
-  }
-
-  @Override
-  public void forEach(Function<E, Void> action) {
-    LinkedNode<E> current = head;
-    while (current != null){
-      action.apply(current.get());
-      current = current.getNext();
-    }
-  }
-
-  @Override
-  public Iterator<E> iterator() {
-    inode = head;
-
-    return new Iterator<E>() {
-
-      public boolean hasNext() {
-        return inode != null;
-      }
-
-      public E next() {
-        if (!hasNext()) {
-          throw new IllegalStateException("No more elements in the iterator");
+    public E[] toArray() {
+        Object[] array = new Object[size];
+        if (isEmpty()) return (E[]) array;
+        int i = 0;
+        for (LinkedNode<E> node = head; node != null; node = node.getNext()) {
+            array[i] = node.get();
+            i++;
         }
-
-        E element = inode.get();
-        inode = inode.getNext();
-        return element;
-      }
-    };
-  }
-
-    public void setInode(LinkedNode<E> inode) {
-        this.inode = inode;
+        return (E[]) array;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean sort(ToIntFunction<E> toInt) {
+        if (toInt == null || size < 2) return false;
+        Object[] array = toArray();
+        for (int x = 0; x < array.length - 1; x++) {
+            for (int y = 0; y < array.length - 1 - x; y++) {
+                int a = toInt.applyAsInt((E) array[y]);
+                int b = toInt.applyAsInt((E) array[y + 1]);
+                if (a > b) {
+                    Object temp = array[y];
+                    array[y] = array[y + 1];
+                    array[y + 1] = temp;
+                }
+            }
+        }
+        LinkedNode<E> node = head;
+        int i = 0;
+        while (node != null) {
+            node.set((E) array[i++]);
+            node = node.getNext();
+        }
+        return true;
+    }
+
+    @Override
+    public int size() {
+        return this.size;
+    }
+
+    @Override
+    public boolean clear() {
+        try {
+            head = tail = null;
+            size = 0;
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean contains(E element) {
+        for (LinkedNode<E> node = head; node != null; node = node.getNext()) {
+            if (node.get().equals(element)) return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean contains(E[] array) {
+        if (array == null) return false;
+        for (E x : array) {
+            if (!contains(x)) return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean contains(Collection<E> collection) {
+        if (collection == null) return false;
+        Iterator<E> iterator = collection.iterator();
+        while (iterator.hasNext()) {
+            if (!contains(iterator.next())) return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean reverse() {
+        if (isEmpty() || size < 2) return false;
+        LinkedNode<E> current = head;
+        LinkedNode<E> previous = null;
+        LinkedNode<E> temp = tail;
+        tail = head;
+        head = temp;
+        while (current != null) {
+            LinkedNode<E> next = current.getNext();
+            current.setNext(previous);
+            previous = current;
+            current = next;
+        }
+        return true;
+    }
+
+    @Override
+    public void forEach(Function<E, Void> action) {
+        if (isEmpty() || action == null) return;
+        for (LinkedNode<E> node = head; node != null; node = node.getNext()) {
+            action.apply(node.get());
+        }
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return new Iterator<E>() {
+            private LinkedNode<E> current = head;
+
+            @Override
+            public boolean hasNext() {
+                return current != null;
+            }
+
+            @Override
+            public E next() {
+                if (!hasNext()) {
+                    throw new IllegalStateException("No more elements");
+                }
+                E element = current.get();
+                current = current.getNext();
+                return element;
+            }
+        };
+    }
 }

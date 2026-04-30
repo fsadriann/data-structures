@@ -9,12 +9,12 @@ import edu.fsadriann.model.stack.AbstractStack;
 
 public class Stack<E> extends AbstractStack<E> {
 
-    private final LinkedList<E> list;
+    private LinkedList<E> list;
 
 
     public Stack(){
 
-        this.list=null;
+        this.list= new LinkedList<>();
     }
 
     public Stack(LinkedList<E> element){
