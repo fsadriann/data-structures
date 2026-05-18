@@ -1,16 +1,19 @@
 package edu.fsadriann.model.node;
 
+import java.io.Serializable;
+
 /**
  * An abstract implementation of the Node interface.
  * Provides common functionality for nodes in a data structure.
  *
  * @param <E> the type of element stored in the node.
- * 
+ *
  * @author Lenin Javier Serrano Gil
  * @version 1.0.20231115
  */
-public abstract class AbstractNode<E> implements Node<E>, Cloneable {
+public abstract class AbstractNode<E> implements Node<E>, Cloneable, Serializable {
 
+  private static final long serialVersionUID = 1L;
   protected E element;
 
   /**

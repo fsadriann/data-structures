@@ -1,4 +1,4 @@
-package edu.fsadriann.app.binary_tree;
+package edu.fsadriann.app.tree;
 
 public class BinarySearchTree<E extends Comparable<E>> extends BinaryTree<E> {
 

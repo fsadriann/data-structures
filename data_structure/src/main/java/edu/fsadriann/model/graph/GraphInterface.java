@@ -3,7 +3,7 @@ package edu.fsadriann.model.graph;
 import edu.fsadriann.app.graph.Vertex;
 import edu.fsadriann.app.linkedlist.singly.singly.LinkedList;
 
-public interface Graph<E> {
+public interface GraphInterface<E> {
     boolean addEdge(E vortex1,E vortex2) throws Exception;
     boolean addEdgeWithWeight(E vortex1, E vortex2, double weight) throws Exception;
     boolean removeEdge(E vortex1, E vortex2) throws Exception;

@@ -1,4 +1,4 @@
-package edu.fsadriann.app.binary_tree;
+package edu.fsadriann.app.tree;
 
 import edu.fsadriann.app.linkedlist.singly.singly.LinkedList;
 import edu.fsadriann.app.queue.list.Queue;
@@ -6,7 +6,6 @@ import edu.fsadriann.model.list.List;
 import edu.fsadriann.model.node.AbstractNode;
 import edu.fsadriann.model.tree.AbstractTree;
 import edu.fsadriann.model.tree.Tree;
-import edu.fsadriann.app.binary_tree.Root;
 
 
 public class BinaryTree<E> extends AbstractTree<E> {

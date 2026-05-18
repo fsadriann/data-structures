@@ -1,6 +1,5 @@
-package edu.fsadriann.app.binary_tree;
+package edu.fsadriann.app.tree;
 
-import edu.fsadriann.app.linkedlist.singly.singly.LinkedList;
 import org.junit.jupiter.api.Test;
 import edu.fsadriann.model.tree.Tree;
 
