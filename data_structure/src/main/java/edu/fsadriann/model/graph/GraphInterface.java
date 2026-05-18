@@ -23,6 +23,7 @@ public interface GraphInterface<E> {
     void bfs(E startV);
     LinkedList<E> shortestPath(E startV, E endV);
     LinkedList<E> dijkstra(E startV, E endV);
+    LinkedList<E> kruskal();
     double dijkstraWeight(E startV, E endV);
     boolean isConnected();
     boolean hasCycle();

@@ -393,4 +393,23 @@ class GraphTest {
         Graph<Integer> g2 = new Graph<>();
         System.out.println("Grafo vacío conectado: " + g2.isConnected());
     }
+
+    @Test
+    void kruskal() throws Exception {
+        Graph<String> g = new Graph<>();
+        g.addVortex("A"); g.addVortex("B");
+        g.addVortex("C"); g.addVortex("D");
+        g.addEdgeWithWeight("A", "B", 10);
+        g.addEdgeWithWeight("A", "C", 15);
+        g.addEdgeWithWeight("A", "D", 20);
+        g.addEdgeWithWeight("B", "D", 25);
+        g.addEdgeWithWeight("C", "D", 30);
+        g.addEdgeWithWeight("B", "C", 35);
+
+        var mst = g.kruskal();
+        assertFalse(mst.isEmpty());
+
+        Graph<String> empty = new Graph<>();
+        assertTrue(empty.kruskal().isEmpty());
+    }
 }

@@ -294,6 +294,118 @@ public class Graph<E> implements GraphInterface<E> {
         return path;
     }
 
+    // construye el MST iterando sobre aristas ordenadas por peso indicando cuales se incluyen
+    @SuppressWarnings("unchecked")
+    @Override
+    public LinkedList<E> kruskal() {
+        LinkedList<E> mst = new LinkedList<>();
+        if (isEmpty()) return mst;
+
+        int[] src = new int[numVerts * numVerts];
+        int[] dest = new int[numVerts * numVerts];
+        double[] weight = new double[numVerts * numVerts];
+        int total = 0;
+
+        // extrae aristas de la matriz de adyacencia
+        for (int i = 0; i < numVerts; i++)
+            for (int j = i + 1; j < numVerts; j++)
+                if (matAdj[i][j] != 0) {
+                    src[total] = i;
+                    dest[total] = j;
+                    weight[total++] = matAdj[i][j];
+                }
+
+        // ordena aristas por peso de menor a mayor
+        sortEdges(src, dest, weight, total);
+
+        // Inicializar parent en -1
+        int[] parent = new int[numVerts];
+        for (int i = 0; i < numVerts; i++) parent[i] = -1;
+
+        int e = 0, i = 0;
+        double totalPeso = 0;
+        while (e < numVerts - 1 && i < total) {
+            int x = findParent(parent, src[i]);
+            int y = findParent(parent, dest[i]);
+            // si los vertices están en conjuntos distintos no forman ciclo
+            if (x != y) {
+                mst.add((E) vertexs[src[i]].get());
+                mst.add((E) vertexs[dest[i]].get());
+                parent[x] = y;
+                totalPeso += weight[i];
+                e++;
+                System.out.printf("INCLUIDA:   (%s - %s) peso = %.1f%n",
+                        vertexs[src[i]].get(), vertexs[dest[i]].get(), weight[i]);
+            } else {
+                System.out.printf("DESCARTADA: (%s - %s) peso = %.1f  [formaría ciclo]%n",
+                        vertexs[src[i]].get(), vertexs[dest[i]].get(), weight[i]);
+            }
+            i++;
+        }
+        System.out.printf("Peso total MST: %.1f%n", totalPeso);
+        return mst;
+    }
+
+    // ordena las aristas por peso
+    private void sortEdges(int[] src, int[] dest, double[] weight, int total) {
+        if (total <= 1) return;
+        int mid = total / 2;
+
+        int[] lSrc = new int[mid];
+        int[] rSrc = new int[total - mid];
+        int[] lDest = new int[mid];
+        int[] rDest = new int[total - mid];
+        double[] lWeight = new double[mid];
+        double[] rWeight = new double[total - mid];
+
+        for (int i = 0; i < mid; i++) {
+            lSrc[i] = src[i];
+            lDest[i] = dest[i];
+            lWeight[i] = weight[i];
+        }
+        for (int i = mid; i < total; i++) {
+            rSrc[i - mid] = src[i];
+            rDest[i - mid] = dest[i];
+            rWeight[i - mid] = weight[i];
+        }
+
+        // ordenar mitades y mezclar
+        sortEdges(lSrc, lDest, lWeight, mid);
+        sortEdges(rSrc, rDest, rWeight, total - mid);
+
+        int i = 0, j = 0, k = 0;
+        while (i < mid && j < total - mid) {
+            if (lWeight[i] <= rWeight[j]) {
+                weight[k] = lWeight[i];
+                src[k] = lSrc[i];
+                dest[k] = lDest[i];
+                i++;
+            } else {
+                weight[k] = rWeight[j];
+                src[k] = rSrc[j];
+                dest[k] = rDest[j];
+                j++;
+            }
+            k++;
+        }
+        while (i < mid) {
+            weight[k] = lWeight[i];
+            src[k] = lSrc[i];
+            dest[k++] = lDest[i++];
+        }
+        while (j < total - mid) {
+            weight[k] = rWeight[j];
+            src[k] = rSrc[j];
+            dest[k++] = rDest[j++];
+        }
+    }
+
+    // encuentra la raíz del conjunto al que pertenece i
+    private int findParent(int[] parent, int i) {
+        while (parent[i] != -1) i = parent[i];
+        return i;
+    }
+
     private int minDistance(double[] dist, boolean[] visited) {
         int u = -1;
         double min = Double.MAX_VALUE;
