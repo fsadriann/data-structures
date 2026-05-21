@@ -335,4 +335,8 @@ public class Array<E> extends AbstractArray<E>{
         tail=actual-1;
         return true;
     }
+
+    public int getCapacity() {
+        return capacity;
+    }
 }
